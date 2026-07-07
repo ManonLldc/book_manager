@@ -617,17 +617,6 @@ Chaque mot doit être présent (dans le titre OU l'auteur) : c'est une recherche
 <% end %>
 ```
 
-### 🧠 Explications
-
-- `params[:query]` = ce que l'utilisateur tape dans la barre de recherche
-- `LIKE` = recherche SQL partielle (pas besoin d'écrire le mot entier)
-- `%texte%` = contient le texte n'importe où dans la chaîne
-- `LOWER(...)` = neutralise la casse (majuscules/minuscules)
-
-⚠️ Avec **SQLite** (base par défaut en dev), `LIKE` est déjà insensible à la casse pour les caractères ASCII. Avec **PostgreSQL**, `LIKE` devient sensible à la casse : le `LOWER()` devient alors indispensable. Les accents (é, è, à...) ne sont gérés par aucune des deux approches nativement — il faudrait une gem type `unaccent` pour aller plus loin.
-
----
-
 ## 🚀 Prochaines améliorations possibles
 
 - `enum` pour le statut (plus propre en Rails)
@@ -639,3 +628,64 @@ Chaque mot doit être présent (dans le titre OU l'auteur) : c'est une recherche
 - fichier `seed.rb` propre pour les données de test
 - design Bootstrap ou Tailwind
 - petite API JSON
+
+# Scripts `.bat` — Gestion du serveur Rails (book_manager)
+
+Ce projet contient deux fichiers `.bat` permettant de démarrer et d'arrêter facilement le serveur Rails, qui tourne dans WSL (Ubuntu-24.04).
+
+---
+
+## 1. Script qui **démarre** le serveur
+
+
+```bat
+@echo off
+start http://localhost:3000
+wsl -d Ubuntu-24.04 bash -lic "cd ~/book_manager && bundle exec rails server"
+pause
+```
+
+### Ce qu'il fait
+1. **`start http://localhost:3000`**
+   Ouvre le navigateur par défaut sur l'URL de l'application. La page peut afficher une erreur pendant quelques secondes si Rails n'a pas encore fini de démarrer — il suffit d'actualiser une fois le serveur prêt.
+
+2. **`wsl -d Ubuntu-24.04 bash -lic "cd ~/book_manager && bundle exec rails server"`**
+   Lance une session WSL (distribution Ubuntu-24.04) et exécute dans le dossier `~/book_manager` la commande `bundle exec rails server`, qui démarre le serveur Rails (Puma) avec les gems définies dans le `Gemfile`.
+   - `-l` : session "login", charge `~/.bashrc` / `~/.profile` (nécessaire pour que Ruby/Bundler soient disponibles).
+   - `-i` : shell interactif.
+   - `-c "..."` : exécute la commande indiquée puis s'arrête.
+
+3. **`pause`**
+   Empêche la fenêtre CMD de se fermer automatiquement quand le serveur s'arrête, en affichant *"Appuyez sur une touche pour continuer..."*.
+
+### À quoi ça sert
+C'est le script à lancer pour **mettre en route l'application** : il démarre le serveur Rails et ouvre directement la page dans le navigateur.
+
+---
+
+## 2. Script qui **arrête** le serveur
+
+*(actuellement nommé `demarrer.bat` dans ton dossier)*
+
+```bat
+@echo off
+wsl -d Ubuntu-24.04 bash -lc "pkill -f 'puma.*book_manager'"
+
+echo.
+echo Le serveur Rails a ete arrete.
+
+exit
+```
+
+### Ce qu'il fait
+1. **`wsl -d Ubuntu-24.04 bash -lc "pkill -f 'puma.*book_manager'"`**
+   Se connecte à WSL et exécute `pkill -f 'puma.*book_manager'`, qui recherche et **tue le processus Puma** (le serveur web utilisé par Rails) correspondant au projet `book_manager`.
+
+2. **`echo` / `echo Le serveur Rails a ete arrete.`**
+   Affiche un message de confirmation dans la fenêtre CMD.
+
+3. **`exit`**
+   Ferme la fenêtre CMD actuelle.
+
+### À quoi ça sert
+C'est le script à lancer pour **arrêter proprement le serveur Rails** sans avoir à retourner dans le terminal WSL manuellement.
