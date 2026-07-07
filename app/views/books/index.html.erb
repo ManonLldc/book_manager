@@ -1,0 +1,53 @@
+<div class="container">
+<h1>Mes livres</h1>
+
+<%= link_to "➕ Ajouter un livre", new_book_path %>
+
+<br><br>
+
+<%= form_with url: books_path, method: :get, local: true do %>
+  <%= text_field_tag :query, params[:query], placeholder: "Rechercher un livre..." %>
+  <%= submit_tag "Rechercher" %>
+<% end %>
+
+<br>
+
+<table>
+  <thead>
+    <tr>
+      <th>Titre</th>
+      <th>Auteur</th>
+      <th>Statut</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @books.each do |book| %>
+      <tr>
+        <td><%= book.title %></td>
+        <td><%= book.author %></td>
+
+        <!-- BADGE -->
+        <td>
+          <% case book.status %>
+          <% when "À lire" %>
+            <span class="badge badge-a-lire">À lire</span>
+          <% when "En cours" %>
+            <span class="badge badge-en-cours">En cours</span>
+          <% when "Lu" %>
+            <span class="badge badge-lu">Lu</span>
+          <% end %>
+        </td>
+
+        <td>
+          <%= link_to "Voir", book_path(book) %> |
+          <%= link_to "Modifier", edit_book_path(book) %> |
+          <%= link_to "Supprimer", book_path(book),
+              data: { turbo_method: :delete, turbo_confirm: "Tu es sûr ?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>

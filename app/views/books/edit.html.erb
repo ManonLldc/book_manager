@@ -1,0 +1,30 @@
+<div class="container">
+  <h1>Modifier le livre</h1>
+
+  <div class="form-card">
+    <%= form_with model: @book, local: true do |form| %>
+
+      <div class="form-group">
+        <%= form.label :title, "Titre" %>
+        <%= form.text_field :title %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :author, "Auteur" %>
+        <%= form.text_field :author %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :status, "Statut" %>
+        <%= form.select :status, ["À lire", "En cours", "Lu"] %>
+      </div>
+
+      <%= form.submit "Modifier", class: "btn" %>
+
+    <% end %>
+  </div>
+
+  <br>
+
+  <%= link_to "← Retour", books_path, class: "btn" %>
+</div>

@@ -1,0 +1,30 @@
+<div class="container">
+<h1>Ajouter un livre</h1>
+
+<%= form_with model: @book, local: true do |form| %>
+
+  <div>
+    <%= form.label :title, "Titre" %>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :author, "Auteur" %>
+    <%= form.text_field :author %>
+  </div>
+
+  <div>
+    <%= form.label :status, "Statut" %>
+    <%= form.select :status, ["À lire", "En cours", "Lu"] %>
+  </div>
+
+  <div>
+    <%= form.submit "Ajouter" %>
+  </div>
+
+<% end %>
+
+<br>
+
+<%= link_to "Retour à la liste", books_path %>
+</div>
